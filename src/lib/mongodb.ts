@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 const MONGODB_URI = process.env.MONGO;
 
 if (!MONGODB_URI) {
-  throw new Error("❌ Please define the MONGO environment variable.");
+  throw new Error("Please define the MONGO environment variable.");
 }
 
 const connectToDatabase = async () => {
   try {
     if (mongoose.connection.readyState === 1) {
-      console.log("✅ Already connected to MongoDB");
+      console.log("Already connected to MongoDB");
       return mongoose;
     }
 
@@ -17,10 +17,10 @@ const connectToDatabase = async () => {
       bufferCommands: false,
     });
 
-    console.log("✅ MongoDB Connected Successfully");
+    console.log("MongoDB Connected Successfully");
     return mongoose;
   } catch (error) {
-    console.error("❌ MongoDB Connection Error:", error);
+    console.error("MongoDB Connection Error:", error);
     return null;
   }
 };

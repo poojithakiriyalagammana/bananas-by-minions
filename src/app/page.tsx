@@ -6,19 +6,6 @@ import React, { useState, useEffect } from "react";
 import "tailwindcss/tailwind.css";
 
 const Home: React.FC = () => {
-  const [showSignup, setShowSignup] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-
-  const handleLoginClick = () => {
-    setIsVisible(true); // Make popup container visible
-    setTimeout(() => setShowSignup(true), 50); // Slight delay for smooth effect
-  };
-
-  const handleClosePopup = () => {
-    setShowSignup(false);
-    setTimeout(() => setIsVisible(false), 300); // Hide popup after animation ends
-  };
-
   return (
     <div
       className="min-h-screen flex items-center justify-center bg-yellow-300 bg-cover bg-center transition-all duration-500"
@@ -41,24 +28,6 @@ const Home: React.FC = () => {
             Score
           </button>
         </div>
-
-        {/* Popup Modal with Smooth Animation */}
-        {isVisible && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
-            <div
-              className={`bg-white p-8 rounded-lg shadow-lg relative transform transition-all duration-300 ${
-                showSignup ? "opacity-100 scale-100" : "opacity-0 scale-90"
-              }`}
-            >
-              <button
-                onClick={handleClosePopup}
-                className="mt-4 px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
