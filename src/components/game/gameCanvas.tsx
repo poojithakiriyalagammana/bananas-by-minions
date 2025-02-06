@@ -1,26 +1,23 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-
-// You'll need to create these classes and import them
 import { Player } from "./ts/classes/player";
 import { Sprite } from "./ts/classes/sprite";
 import { CollisionBlock } from "./ts/classes/collisionBlock";
-// Import your collision data
+import { Collectable, getRandomPosition } from "./ts/classes/collectable"; // Import Collectable
 import { floorCollisions, platformCollisions } from "./ts/data/collisions";
 import { collision, platformCollision } from "./ts/utils";
-import { Collectable, getRandomPosition } from "./ts/classes/collectable";
+import { useRouter } from "next/navigation";
 
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const c = canvas.getContext("2d");
     if (!c) return;
 
-    // Set canvas dimensions
     canvas.width = 1024;
     canvas.height = 576;
 
@@ -29,7 +26,6 @@ export default function GameCanvas() {
       height: canvas.height / 4,
     };
 
-    // Floor collisions setup
     const floorCollisions2D = [];
     for (let i = 0; i < floorCollisions.length; i += 36) {
       floorCollisions2D.push(floorCollisions.slice(i, i + 36));
@@ -41,17 +37,13 @@ export default function GameCanvas() {
         if (symbol === 202) {
           collisionBlocks.push(
             new CollisionBlock({
-              position: {
-                x: x * 16,
-                y: y * 16,
-              },
+              position: { x: x * 16, y: y * 16 },
             })
           );
         }
       });
     });
 
-    // Platform collisions setup
     const platformCollisions2D = [];
     for (let i = 0; i < platformCollisions.length; i += 36) {
       platformCollisions2D.push(platformCollisions.slice(i, i + 36));
@@ -63,10 +55,7 @@ export default function GameCanvas() {
         if (symbol === 202) {
           platformCollisionBlocks.push(
             new CollisionBlock({
-              position: {
-                x: x * 16,
-                y: y * 16,
-              },
+              position: { x: x * 16, y: y * 16 },
               height: 4,
             })
           );
@@ -74,16 +63,8 @@ export default function GameCanvas() {
       });
     });
 
-    const gravity = 0.1;
-    const collectable = new Collectable({
-      position: getRandomPosition(),
-    });
-
     const player = new Player({
-      position: {
-        x: 100,
-        y: 300,
-      },
+      position: { x: 100, y: 300 },
       collisionBlocks,
       platformCollisionBlocks,
       imageSrc: "./img/warrior/Idle.png",
@@ -133,24 +114,16 @@ export default function GameCanvas() {
     });
 
     const keys = {
-      d: {
-        pressed: false,
-      },
-      a: {
-        pressed: false,
-      },
+      d: { pressed: false },
+      a: { pressed: false },
     };
 
     const background = new Sprite({
-      position: {
-        x: 0,
-        y: 0,
-      },
+      position: { x: 0, y: 0 },
       imageSrc: "./img/background.png",
     });
 
     const backgroundImageHeight = 432;
-
     const camera = {
       position: {
         x: 0,
@@ -158,13 +131,20 @@ export default function GameCanvas() {
       },
     };
 
+    // ** Create Collectables **
+    const collectables: Collectable[] = Array.from(
+      { length: 1 },
+      () => new Collectable({ position: getRandomPosition() })
+    );
+
     function animate() {
       window.requestAnimationFrame(animate);
       if (!c) return;
 
       c.fillStyle = "white";
-      if (!canvas) return;
-      c.fillRect(0, 0, canvas.width, canvas.height);
+      if (canvas) {
+        c.fillRect(0, 0, canvas.width, canvas.height);
+      }
 
       c.save();
       c.scale(4, 4);
@@ -174,28 +154,45 @@ export default function GameCanvas() {
       player.checkForHorizontalCanvasCollision();
       player.update(c);
 
+      collectables.forEach((collectable) => {
+        collectable.draw(c);
+
+        if (collectable.checkCollision(player)) {
+          collectable.collected = true;
+          router.push("/banana"); // Redirect when banana is collected
+        }
+      });
+
       player.velocity.x = 0;
       if (keys.d.pressed) {
         player.switchSprite("Run");
         player.velocity.x = 2;
         player.lastDirection = "right";
-        player.shouldPanCameraToTheLeft({ canvas, camera });
+        if (canvas) {
+          player.shouldPanCameraToTheLeft({ canvas, camera });
+        }
       } else if (keys.a.pressed) {
         player.switchSprite("RunLeft");
         player.velocity.x = -2;
         player.lastDirection = "left";
-        player.shouldPanCameraToTheRight({ canvas, camera });
+        if (canvas) {
+          player.shouldPanCameraToTheRight({ canvas, camera });
+        }
       } else if (player.velocity.y === 0) {
         if (player.lastDirection === "right") player.switchSprite("Idle");
         else player.switchSprite("IdleLeft");
       }
 
       if (player.velocity.y < 0) {
-        player.shouldPanCameraDown({ camera, canvas });
+        if (canvas) {
+          player.shouldPanCameraDown({ camera, canvas });
+        }
         if (player.lastDirection === "right") player.switchSprite("Jump");
         else player.switchSprite("JumpLeft");
       } else if (player.velocity.y > 0) {
-        player.shouldPanCameraUp({ camera, canvas });
+        if (canvas) {
+          player.shouldPanCameraUp({ camera, canvas });
+        }
         if (player.lastDirection === "right") player.switchSprite("Fall");
         else player.switchSprite("FallLeft");
       }
@@ -203,10 +200,8 @@ export default function GameCanvas() {
       c.restore();
     }
 
-    // Start animation
     animate();
 
-    // Event listeners
     const handleKeyDown = (event: KeyboardEvent) => {
       switch (event.key) {
         case "d":
@@ -235,21 +230,18 @@ export default function GameCanvas() {
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
-    // Cleanup
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []);
 
   return (
-    <>
-      <style>{`
-        body {
-          background: black;
-        }
-      `}</style>
-      <canvas ref={canvasRef}></canvas>
-    </>
+    <div className="flex items-center justify-center h-screen">
+      <canvas
+        ref={canvasRef}
+        className="border-4 border-yellow-500 rounded-xl"
+      ></canvas>
+    </div>
   );
 }
