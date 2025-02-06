@@ -4,9 +4,11 @@ import connectToDatabase from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 import CredentialsProvider from "next-auth/providers/credentials";
 import google from "next-auth/providers/google";
+
 const handlers = NextAuth({
   session: {
     strategy: "jwt",
+    maxAge: 60 * 60, // 1 hour in seconds
   },
   providers: [
     google({
@@ -77,4 +79,5 @@ const handlers = NextAuth({
   },
   secret: process.env.NEXTAUTH_SECRET,
 });
+
 export { handlers as GET, handlers as POST };
