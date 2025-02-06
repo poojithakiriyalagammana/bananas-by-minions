@@ -159,7 +159,9 @@ export default function GameCanvas() {
 
         if (collectable.checkCollision(player)) {
           collectable.collected = true;
-          router.push("/banana"); // Redirect when banana is collected
+          setTimeout(() => {
+            router.push("/banana"); // Smoothly redirect when banana is collected
+          }, 500); // Delay the redirect by 500ms for a smoother transition
         }
       });
 
