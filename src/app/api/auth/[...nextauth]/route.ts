@@ -8,7 +8,7 @@ import google from "next-auth/providers/google";
 const handlers = NextAuth({
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60, // 1 hour in seconds
+    maxAge: 900, // 15 minutes in seconds
   },
   providers: [
     google({
@@ -60,6 +60,7 @@ const handlers = NextAuth({
       if (user) {
         token.id = user.id;
         token.email = user.email;
+        token.exp = Math.floor(Date.now() / 1000) + 900; // Set JWT expiration to 15 minutes
       }
       return token;
     },
@@ -70,6 +71,7 @@ const handlers = NextAuth({
           name: token.name,
           image: token.picture,
         };
+        session.expires = new Date(Date.now() + 900 * 1000).toISOString(); // Set session expiration to 15 minutes
       }
       return session;
     },

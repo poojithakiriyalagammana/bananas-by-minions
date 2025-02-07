@@ -20,7 +20,7 @@ import { FcGoogle } from "react-icons/fc";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { TriangleAlert } from "lucide-react";
+import { Loader, TriangleAlert } from "lucide-react";
 import { signIn } from "next-auth/react";
 
 const SignUp = () => {
@@ -32,11 +32,13 @@ const SignUp = () => {
   });
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Define loading state
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPending(true);
+    setLoading(true); // Set loading to true
 
     const res = await fetch("/api/auth/signup", {
       method: "POST",
@@ -47,16 +49,23 @@ const SignUp = () => {
 
     if (res.ok) {
       setPending(false);
+      setLoading(false); // Set loading to false
       toast.success(data.message);
       router.push("/sign-in");
-    } else if (res.status === 400) {
+    } else if (res.status === 400 || res.status === 500) {
       setError(data.message);
       setPending(false);
-    } else if (res.status === 500) {
-      setError(data.message);
-      setPending(false);
+      setLoading(false); // Set loading to false
     }
   };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 flex justify-center items-center bg-white/50">
+        <Loader className="size-12 animate-spin" />
+      </div>
+    );
+  }
 
   const handleProvider = (
     event: React.MouseEvent<HTMLButtonElement>,
@@ -65,6 +74,7 @@ const SignUp = () => {
     event.preventDefault();
     signIn(value, { callbackUrl: "/" });
   };
+
   return (
     <div className="h-full flex items-center justify-center bg-[#1b0918]">
       <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">

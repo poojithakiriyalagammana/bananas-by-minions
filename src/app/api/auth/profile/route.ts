@@ -1,36 +1,74 @@
+// app/api/profile/route.ts
 import { NextResponse } from "next/server";
-import User from "@/models/user";
 import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/user";
 
-export async function PUT(request: Request) {
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const email = searchParams.get("email");
+
+  if (!email) {
+    return NextResponse.json({ message: "Email is required" }, { status: 400 });
+  }
+
   try {
     await connectToDatabase();
+    const user = await User.findOne({ email }, "name email");
 
-    const { email, name } = await request.json();
-
-    if (!email || !name) {
-      return NextResponse.json({ message: "Missing fields" }, { status: 400 });
-    }
-
-    const user = await User.findOne({ email });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    user.name = name;
-    await user.save();
-
+    return NextResponse.json(user);
+  } catch (error) {
     return NextResponse.json(
-      {
-        message: "User name updated successfully",
-        updatedUser: { email: user.email, name: user.name }, // Return updated data
-      },
-      { status: 200 }
+      { message: "Error fetching profile" },
+      { status: 500 }
     );
-  } catch (err) {
-    console.error("Error updating user:", err);
+  }
+}
+
+export async function PUT(request: Request) {
+  try {
+    const { email, name, newEmail } = await request.json();
+
+    if (!email || !name) {
+      return NextResponse.json(
+        { message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    await connectToDatabase();
+
+    // Check if new email already exists (if email is being changed)
+    if (newEmail && newEmail !== email) {
+      const existingUser = await User.findOne({ email: newEmail });
+      if (existingUser) {
+        return NextResponse.json(
+          { message: "Email already in use" },
+          { status: 400 }
+        );
+      }
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email },
+      {
+        name,
+        ...(newEmail && { email: newEmail }),
+      },
+      { new: true, select: "name email" }
+    );
+
+    if (!updatedUser) {
+      return NextResponse.json({ message: "User not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(updatedUser);
+  } catch (error) {
     return NextResponse.json(
-      { message: "Something went wrong" },
+      { message: "Error updating profile" },
       { status: 500 }
     );
   }

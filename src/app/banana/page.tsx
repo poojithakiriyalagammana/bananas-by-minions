@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { Loader } from "lucide-react";
 
 // Define the shape of the data you're expecting
 interface BananaData {
@@ -59,8 +60,8 @@ const BananaGame: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
+      <div className="flex justify-center items-center w-full h-screen">
+        <Loader className="size-12 animate-spin" />
       </div>
     );
   }
