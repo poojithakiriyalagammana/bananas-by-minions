@@ -5,7 +5,7 @@ import { Sprite } from "./ts/classes/sprite";
 import { CollisionBlock } from "./ts/classes/collisionBlock";
 import { Collectable, getRandomPosition } from "./ts/classes/collectable"; // Import Collectable
 import { floorCollisions, platformCollisions } from "./ts/data/collisions";
-import { collision, platformCollision } from "./ts/utils";
+// import { collision, platformCollision } from "./ts/utils";
 import { useRouter } from "next/navigation";
 
 export default function GameCanvas() {
@@ -64,7 +64,7 @@ export default function GameCanvas() {
     });
 
     const player = new Player({
-      position: { x: 100, y: 300 },
+      position: { x: 0, y: 300 },
       collisionBlocks,
       platformCollisionBlocks,
       imageSrc: "./img/warrior/Idle.png",
@@ -73,7 +73,7 @@ export default function GameCanvas() {
         Idle: {
           imageSrc: "./img/warrior/Idle.png",
           frameRate: 8,
-          frameBuffer: 3,
+          frameBuffer: 10,
         },
         Run: {
           imageSrc: "./img/warrior/Run.png",
@@ -103,7 +103,7 @@ export default function GameCanvas() {
         IdleLeft: {
           imageSrc: "./img/warrior/IdleLeft.png",
           frameRate: 8,
-          frameBuffer: 3,
+          frameBuffer: 10,
         },
         JumpLeft: {
           imageSrc: "./img/warrior/JumpLeft.png",
