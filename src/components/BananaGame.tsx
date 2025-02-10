@@ -11,6 +11,7 @@ import {
   RefreshCcw,
   ArrowLeft,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface BananaData {
   question: string;
@@ -84,6 +85,59 @@ const BananaGame: React.FC = () => {
     return options.sort(() => Math.random() - 0.5);
   };
 
+  const updateScore = async (newScore: number) => {
+    try {
+      const response = await fetch("/api/scores/update", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          score: newScore,
+          difficulty: difficulty,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update score");
+      }
+
+      const data = await response.json();
+
+      if (data.updated) {
+        toast.success("New high score!");
+      }
+    } catch (error) {
+      console.error("Failed to update score:", error);
+      toast.error("Failed to update score");
+    }
+  };
+
+  const handleSubmit = (answer: string | number) => {
+    const isCorrect = data && parseInt(String(answer)) === data.solution;
+
+    if (isCorrect) {
+      const newScore = score + 1;
+      setScore(newScore);
+      updateScore(newScore);
+      setMessage("Correct! Loading next question...");
+
+      // Reset timer based on difficulty
+      if (difficulty === "medium") {
+        setTimeLeft(60);
+      } else if (difficulty === "hard") {
+        setTimeLeft(120);
+      }
+
+      setTimeout(() => {
+        setUserAnswer("");
+        setMessage("");
+        fetchData();
+      }, 1500);
+    } else {
+      setShowModal(true);
+    }
+  };
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -109,30 +163,6 @@ const BananaGame: React.FC = () => {
       );
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSubmit = (answer: string | number) => {
-    const isCorrect = data && parseInt(String(answer)) === data.solution;
-
-    if (isCorrect) {
-      setScore((prev) => prev + 1);
-      setMessage("Correct! Loading next question...");
-
-      // Reset timer based on difficulty
-      if (difficulty === "medium") {
-        setTimeLeft(60);
-      } else if (difficulty === "hard") {
-        setTimeLeft(120);
-      }
-
-      setTimeout(() => {
-        setUserAnswer("");
-        setMessage("");
-        fetchData();
-      }, 1500);
-    } else {
-      setShowModal(true);
     }
   };
 
