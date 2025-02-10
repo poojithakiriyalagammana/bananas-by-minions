@@ -1,16 +1,17 @@
 "use client";
 import React, { useEffect, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Player } from "./ts/classes/player";
 import { Sprite } from "./ts/classes/sprite";
 import { CollisionBlock } from "./ts/classes/collisionBlock";
-import { Collectable, getRandomPosition } from "./ts/classes/collectable"; // Import Collectable
+import { Collectable, getRandomPosition } from "./ts/classes/collectable";
 import { floorCollisions, platformCollisions } from "./ts/data/collisions";
-// import { collision, platformCollision } from "./ts/utils";
-import { useRouter } from "next/navigation";
 
 export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const difficulty = searchParams.get("difficulty") || "classic"; // Default to "classic"
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -160,8 +161,8 @@ export default function GameCanvas() {
         if (collectable.checkCollision(player)) {
           collectable.collected = true;
           setTimeout(() => {
-            router.push("/banana"); // Smoothly redirect when banana is collected
-          }, 500); // Delay the redirect by 500ms for a smoother transition
+            router.push(`/banana?difficulty=${difficulty}`); // Redirect using the correct difficulty
+          }, 500);
         }
       });
 

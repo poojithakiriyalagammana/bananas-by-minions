@@ -21,14 +21,8 @@ const Home: React.FC = () => {
             <UserButton />
           </SessionProvider>
 
-          <button
-            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow-md hover:bg-green-600 transition"
-            onClick={() => (window.location.href = "/game")}
-          >
-            Play
-          </button>
           <button className="px-4 py-2 bg-red-500 text-white rounded-lg shadow-md hover:bg-red-600 transition">
-            Score
+            Leader Board
           </button>
         </div>
       </div>

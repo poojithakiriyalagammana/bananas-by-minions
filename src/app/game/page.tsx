@@ -1,19 +1,25 @@
 "use client";
+
 import GameCanvas from "@/components/game/gameCanvas";
 import { Loader } from "lucide-react";
-import React from "react";
+import { SessionProvider, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-const Game: React.FC = () => {
-  const [status, setStatus] = React.useState("loading");
+const GameContent: React.FC = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setStatus("loaded");
-    }, 200);
-    return () => clearTimeout(timer);
-  }, []);
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/sign-in");
+    } else if (status === "authenticated") {
+      setLoading(false);
+    }
+  }, [status, router]);
 
-  if (status === "loading") {
+  if (status === "loading" || loading) {
     return (
       <div className="fixed inset-0 flex justify-center items-center bg-white/50">
         <Loader className="size-12 animate-spin" />
@@ -26,6 +32,14 @@ const Game: React.FC = () => {
       <h1>Welcome to the Game Page</h1>
       <GameCanvas />
     </div>
+  );
+};
+
+const Game: React.FC = () => {
+  return (
+    <SessionProvider>
+      <GameContent />
+    </SessionProvider>
   );
 };
 
