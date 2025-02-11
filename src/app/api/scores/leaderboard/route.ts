@@ -1,5 +1,3 @@
-// app/api/scores/leaderboard/route.ts
-
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Score from "@/models/score";
@@ -11,9 +9,29 @@ export async function GET(req: Request) {
 
     await connectToDatabase();
 
-    const leaderboard = await Score.find({ difficulty })
-      .sort({ score: -1, updatedAt: -1 })
-      .limit(10);
+    const leaderboard = await Score.aggregate([
+      { $match: { difficulty } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          score: 1,
+          difficulty: 1,
+          updatedAt: 1,
+          userName: "$user.name",
+          userEmail: "$user.email",
+        },
+      },
+      { $sort: { score: -1, updatedAt: -1 } },
+      { $limit: 10 },
+    ]);
 
     return NextResponse.json(leaderboard);
   } catch (error) {

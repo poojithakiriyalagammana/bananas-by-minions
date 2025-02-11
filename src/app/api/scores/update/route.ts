@@ -37,8 +37,6 @@ export async function POST(req: Request) {
         {
           $set: {
             score: score,
-            userName: user.name,
-            userEmail: user.email,
           },
         },
         {

@@ -3,10 +3,8 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface IScore extends Document {
   userId: mongoose.Types.ObjectId;
-  userName: string;
-  userEmail: string;
   score: number;
-  difficulty: string;
+  difficulty: string[];
   updatedAt: Date;
 }
 
@@ -17,23 +15,16 @@ const ScoreSchema: Schema<IScore> = new mongoose.Schema(
       ref: "User",
       required: true,
     },
-    userName: {
-      type: String,
-      required: true,
-    },
-    userEmail: {
-      type: String,
-      required: true,
-    },
     score: {
       type: Number,
       required: true,
       default: 0,
     },
     difficulty: {
-      type: String,
+      type: [String],
       required: true,
       enum: ["classic", "easy", "medium", "hard"],
+      default: null,
     },
   },
   { timestamps: true }
