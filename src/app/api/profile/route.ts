@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import User from "@/models/user";
-import Score from "@/models/score"; // Assuming you have a Score model
+import Score from "@/models/score";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -67,26 +67,20 @@ export async function PUT(request: Request) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    // Update corresponding score record in Score table
-    const updatedScore = await Score.findOneAndUpdate(
-      { userEmail: email },
-      {
-        userName: name,
-        ...(newEmail && { userEmail: newEmail }), // Update email in Score table if changed
-      },
-      { new: true }
-    );
+    // Update corresponding score record in Score table if it has a userName field
+    const scoreUpdateFields = {
+      ...(name && { userName: name }),
+      ...(newEmail && { userEmail: newEmail }),
+    };
 
-    if (!updatedScore) {
-      return NextResponse.json(
-        { message: "Score record not found" },
-        { status: 404 }
-      );
+    if (Object.keys(scoreUpdateFields).length > 0) {
+      await Score.findOneAndUpdate({ userEmail: email }, scoreUpdateFields, {
+        new: true,
+      });
     }
 
     return NextResponse.json({
       updatedUser,
-      updatedScore,
     });
   } catch (error) {
     return NextResponse.json(

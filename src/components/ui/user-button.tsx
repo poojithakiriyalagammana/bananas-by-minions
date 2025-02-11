@@ -1,26 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, User, LogOut } from "lucide-react";
+import { Play, User, LogOut, X } from "lucide-react";
+
+import LeaderboardPage from "@/components/leaderboard/leaderboard";
+import ProfilePage from "@/components/profile/profile";
+import Link from "next/link";
 
 const UserButton = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
-  const [showPopup, setShowPopup] = useState(false);
+  const [activePopup, setActivePopup] = useState<
+    "play" | "signIn" | "leaderboard" | "profile" | null
+  >(null);
+  const [isClient, setIsClient] = useState(false);
 
-  if (status === "loading") {
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (status === "loading" || !isClient) {
     return null;
   }
 
@@ -28,12 +32,12 @@ const UserButton = () => {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push("/");
+    router.push("/sign-in");
   };
 
   const handleGameRedirect = (difficulty: string) => {
     router.push(`/game?difficulty=${difficulty}`);
-    setShowPopup(false);
+    setActivePopup(null);
   };
 
   const buttonVariants = {
@@ -49,125 +53,191 @@ const UserButton = () => {
   const difficultyButtons = [
     {
       label: "Classic",
-      color: "bg-gradient-to-r from-gray-200 to-gray-300",
+      color:
+        "bg-[#edd17e] from-gray-300 to-gray-400 text-2xl font-bold text-[#1f1e1e] border-2 border-black/50",
       difficulty: "classic",
     },
     {
       label: "Easy",
-      color: "bg-gradient-to-r from-green-300 to-green-400",
+      color:
+        "bg-[#edd17e] from-gray-300 to-gray-400 text-2xl font-bold text-[#1f1e1e] border-2 border-black/50",
       difficulty: "easy",
     },
     {
       label: "Medium",
-      color: "bg-gradient-to-r from-yellow-300 to-yellow-400",
+      color:
+        "bg-[#edd17e] from-gray-300 to-gray-400 text-2xl font-bold text-[#1f1e1e] border-2 border-black/50",
       difficulty: "medium",
     },
     {
       label: "Hard",
-      color: "bg-gradient-to-r from-red-300 to-red-400",
+      color:
+        "bg-[#edd17e] from-gray-300 to-gray-400 text-2xl font-bold text-[#1f1e1e] border-2 border-black/50",
       difficulty: "hard",
     },
   ];
 
+  const PopupWrapper = ({
+    children,
+    onClose,
+  }: {
+    children: React.ReactNode;
+    onClose: () => void;
+  }) => (
+    <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="bg-[#693b0d] rounded-2xl p-6 relative max-w-md w-full"
+      >
+        <Button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-white hover:text-red-300"
+        >
+          <X className="w-8 h-8" />
+        </Button>
+        {children}
+      </motion.div>
+    </div>
+  );
+
   return (
-    <div className="relative flex items-center gap-4">
-      {session ? (
-        <>
-          <motion.div
-            whileHover="hover"
-            whileTap="tap"
-            variants={buttonVariants}
-          >
-            <Button
-              onClick={() => setShowPopup(true)}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-full shadow-lg flex items-center gap-2 transition-all duration-300"
+    <div>
+      <div className="bg-[#6e2709]/75 backdrop-blur-lg rounded-3xl mt-16 shadow-2xl border-4 border-white/30 p-8 max-w-md w-full text-center">
+        <h1 className="text-5xl font-bold text-[#FFFDD0] mb-6 drop-shadow-lg custom-heading">
+          {session ? "LOBBY" : "WELCOME"}
+        </h1>
+
+        {session ? (
+          <>
+            {/* Profile */}
+            <motion.div
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="flex justify-center mb-6 cursor-pointer"
+              onClick={() => setActivePopup("profile")}
             >
-              <Play className="w-4 h-4" />
-              <span>Play</span>
+              <Avatar className="w-20 h-20 ring-4 ring-white/50 border-2 border-[#753109]">
+                <AvatarImage
+                  src={session.user?.image || ""}
+                  className="object-cover rounded-full"
+                />
+                <AvatarFallback className="bg-gradient-to-br from-yellow-500 to-pink-500 text-red text-2xl">
+                  {avatarFallback}
+                </AvatarFallback>
+              </Avatar>
+            </motion.div>
+
+            {/* Play Button */}
+            <motion.div
+              whileHover="hover"
+              whileTap="tap"
+              variants={buttonVariants}
+              className="mb-6 w-full"
+            >
+              <Button
+                onClick={() => setActivePopup("play")}
+                className="bg-[#ffae00] border-2 border-[#753109]  hover:bg-[#ffce63]  text-[#753109] text-2xl px-8 py-3 rounded-full shadow-xl  w-full"
+              >
+                Play
+              </Button>
+            </motion.div>
+
+            {/* Leaderboard Button */}
+            <div className="mb-6 w-full">
+              <motion.div
+                whileHover="hover"
+                whileTap="tap"
+                variants={buttonVariants}
+              >
+                <Button
+                  onClick={() => setActivePopup("leaderboard")}
+                  className="bg-[#ffae00] border-2 border-[#753109]  hover:bg-[#ffce63]  text-[#753109] text-2xl px-8 py-3 rounded-full shadow-xl  w-full"
+                >
+                  Leader Board
+                </Button>
+              </motion.div>
+            </div>
+
+            {/* Logout Button */}
+            <Button
+              onClick={handleSignOut}
+              className="bg-[#753109] border-2 border-[#b86230]  hover:bg-[#a15122]  text-[#ffce63] text-2xl px-8 py-3 rounded-full shadow-xl  w-full"
+            >
+              <LogOut />
+              Log out
             </Button>
-          </motion.div>
-
-          <AnimatePresence>
-            {showPopup && (
+          </>
+        ) : (
+          <>
+            {/* Leaderboard Button */}
+            <div className="mb-6 w-full">
               <motion.div
-                initial={{ opacity: 0, y: -20, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                className="absolute top-12 right-0 bg-white dark:bg-gray-800 shadow-xl rounded-xl w-56 p-4 z-50 border border-gray-200 dark:border-gray-700"
+                whileHover="hover"
+                whileTap="tap"
+                variants={buttonVariants}
               >
-                <div className="space-y-4">
-                  <p className="text-center text-lg font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                    Select Mode
-                  </p>
-                  <div className="flex flex-col gap-3">
-                    {difficultyButtons.map((btn) => (
-                      <motion.div
-                        key={btn.difficulty}
-                        whileHover={{ scale: 1.03 }}
-                        whileTap={{ scale: 0.97 }}
-                      >
-                        <button
-                          onClick={() => handleGameRedirect(btn.difficulty)}
-                          className={`w-full ${btn.color} text-gray-800 font-medium py-2 px-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 transform`}
-                        >
-                          {btn.label}
-                        </button>
-                      </motion.div>
-                    ))}
-                  </div>
-                </div>
+                <Button
+                  onClick={() => setActivePopup("leaderboard")}
+                  className="bg-[#ffae00] border-2 border-[#753109]  hover:bg-[#ffce63]  text-[#753109] text-2xl px-8 py-3 rounded-full shadow-xl  w-full"
+                >
+                  Leader Board
+                </Button>
               </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="cursor-pointer"
-              >
-                <Avatar className="ring-2 ring-blue-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-800 transition-all duration-300">
-                  <AvatarImage
-                    src={session.user?.image || ""}
-                    className="object-cover"
-                  />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-500 text-white">
-                    {avatarFallback}
-                  </AvatarFallback>
-                </Avatar>
-              </motion.div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48 mt-2 p-1 bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-gray-200 dark:border-gray-700">
-              <DropdownMenuItem
-                asChild
-                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-              >
-                <Link href="/profile">
-                  <User className="w-4 h-4" />
-                  <span>Profile</span>
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={handleSignOut}
-                className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200 text-red-500 hover:text-red-600"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </>
-      ) : (
-        <motion.div whileHover="hover" whileTap="tap" variants={buttonVariants}>
-          <Button
-            asChild
-            className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-2 rounded-full shadow-lg transition-all duration-300"
-          >
-            <Link href="/sign-in">Sign in</Link>
-          </Button>
-        </motion.div>
-      )}
+            {/* Sign In Button */}
+            <Button
+              asChild
+              className="bg-[#084d0a] hover:bg-[#0b850f] text-white text-2xl px-8 py-3 rounded-full shadow-xl border-2 border-[#084d0a]/30 w-full"
+            >
+              <Link href="/sign-in">Sign in</Link>
+            </Button>
+          </>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {activePopup === "play" && (
+          <PopupWrapper onClose={() => setActivePopup(null)}>
+            <div className="flex flex-col items-center justify-center">
+              <h1 className="text-4xl font-bold text-[# mb-6 drop-shadow-lg text-center custom-heading">
+                Select Mode
+              </h1>
+              <div className="flex flex-col gap-2 items-center w-full">
+                {difficultyButtons.map((btn) => (
+                  <motion.div
+                    key={btn.difficulty}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="w-full max-w-60"
+                  >
+                    <button
+                      onClick={() => handleGameRedirect(btn.difficulty)}
+                      className={`w-full ${btn.color} text-black py-3 rounded-lg`}
+                    >
+                      {btn.label}
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </PopupWrapper>
+        )}
+
+        {activePopup === "leaderboard" && (
+          <PopupWrapper onClose={() => setActivePopup(null)}>
+            <LeaderboardPage />
+          </PopupWrapper>
+        )}
+
+        {activePopup === "profile" && (
+          <PopupWrapper onClose={() => setActivePopup(null)}>
+            <ProfilePage />
+          </PopupWrapper>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

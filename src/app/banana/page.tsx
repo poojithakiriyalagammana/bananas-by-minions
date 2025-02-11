@@ -1,5 +1,5 @@
 "use client";
-import BananaGame from "@/components/BananaGame";
+import BananaGame from "@/components/BananaApi/BananaGame";
 import { Loader } from "lucide-react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -31,9 +31,11 @@ const BananaContent: React.FC = () => {
 
 const Banana: React.FC = () => {
   return (
-    <SessionProvider>
-      <BananaContent />
-    </SessionProvider>
+    <div className="bg-banana">
+      <SessionProvider>
+        <BananaContent />
+      </SessionProvider>
+    </div>
   );
 };
 

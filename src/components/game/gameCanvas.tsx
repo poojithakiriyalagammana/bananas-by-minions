@@ -11,8 +11,7 @@ export default function GameCanvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const difficulty = searchParams.get("difficulty") || "classic"; // Default to "classic"
-
+  const difficulty = searchParams.get("difficulty") || "classic";
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -161,7 +160,7 @@ export default function GameCanvas() {
         if (collectable.checkCollision(player)) {
           collectable.collected = true;
           setTimeout(() => {
-            router.push(`/banana?difficulty=${difficulty}`); // Redirect using the correct difficulty
+            router.push(`/banana?difficulty=${difficulty}`);
           }, 500);
         }
       });
@@ -240,10 +239,10 @@ export default function GameCanvas() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center h-screen">
+    <div className="flex items-center justify-center ">
       <canvas
         ref={canvasRef}
-        className="border-4 border-yellow-500 rounded-xl"
+        className="border-8 border-red-800 rounded-xl shadow-2xl"
       ></canvas>
     </div>
   );
