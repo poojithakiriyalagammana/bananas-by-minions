@@ -12,6 +12,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 interface BananaData {
   question: string;
@@ -37,6 +38,15 @@ const BananaGame: React.FC = () => {
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [options, setOptions] = useState<Option[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 1000); // 10 seconds delay
+
+    return () => clearTimeout(timer); // Cleanup timer on unmount
+  }, []);
 
   useEffect(() => {
     fetchData();
@@ -121,6 +131,11 @@ const BananaGame: React.FC = () => {
       setScore(newScore);
       updateScore(newScore);
       setMessage("Correct! Loading next question...");
+      confetti({
+        particleCount: 500,
+        spread: 200,
+        origin: { y: 0.8 },
+      });
 
       // Reset timer based on difficulty
       if (difficulty === "medium") {
@@ -248,7 +263,7 @@ const BananaGame: React.FC = () => {
       <h1 className="custom-heading">
         {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode
       </h1>
-
+      {/* Game Diplay */}
       {data && (
         <motion.div
           layout
@@ -264,48 +279,54 @@ const BananaGame: React.FC = () => {
               className="rounded-xl shadow-lg"
             />
           </motion.div>
-          {/* MCQ Easy and Medium Mode */}
-          {difficulty === "easy" || difficulty === "medium" ? (
-            <div className="grid grid-cols-2 gap-4">
-              {options.map((option, index) => (
-                <motion.button
-                  key={index}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleSubmit(option.value)}
-                  className="text-4xl bg-[#91692d] border-2 border-white/30 from-blue-500 to-blue-600 text-white p-2 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
-                >
-                  {option.value}
-                </motion.button>
-              ))}
-            </div>
-          ) : (
-            //Hard and Classic Mode
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSubmit(userAnswer);
-              }}
-              className="space-y-4"
-            >
-              <input
-                type="number"
-                value={userAnswer}
-                onChange={(e) => setUserAnswer(e.target.value)}
-                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
-                placeholder="Type your answer..."
-                required
-              />
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="text-2xl border-2 border-white/30 w-full bg-[#91692d] to-blue-600 text-white p-4 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
-              >
-                Submit Answer
-              </motion.button>
-            </form>
-          )}
+          <>
+            {show && (
+              <div>
+                {/* MCQ Easy and Medium Mode */}
+                {difficulty === "easy" || difficulty === "medium" ? (
+                  <div className="grid grid-cols-2 gap-4">
+                    {options.map((option, index) => (
+                      <motion.button
+                        key={index}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleSubmit(option.value)}
+                        className="text-4xl bg-[#91692d] border-2 border-white/30 from-blue-500 to-blue-600 text-white p-2 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
+                      >
+                        {option.value}
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : (
+                  //Hard and Classic Mode
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSubmit(userAnswer);
+                    }}
+                    className="space-y-4"
+                  >
+                    <input
+                      type="number"
+                      value={userAnswer}
+                      onChange={(e) => setUserAnswer(e.target.value)}
+                      className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-300"
+                      placeholder="Type your answer..."
+                      required
+                    />
+                    <motion.button
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="submit"
+                      className="text-2xl border-2 border-white/30 w-full bg-[#91692d] to-blue-600 text-white p-4 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
+                    >
+                      Submit Answer
+                    </motion.button>
+                  </form>
+                )}
+              </div>
+            )}
+          </>
 
           <AnimatePresence>
             {message && (
