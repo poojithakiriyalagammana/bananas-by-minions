@@ -31,7 +31,7 @@ export default function GameCanvas() {
       floorCollisions2D.push(floorCollisions.slice(i, i + 36));
     }
 
-    const collisionBlocks: any[] = [];
+    const collisionBlocks: CollisionBlock[] = [];
     floorCollisions2D.forEach((row, y) => {
       row.forEach((symbol, x) => {
         if (symbol === 202) {
@@ -49,7 +49,7 @@ export default function GameCanvas() {
       platformCollisions2D.push(platformCollisions.slice(i, i + 36));
     }
 
-    const platformCollisionBlocks: any[] = [];
+    const platformCollisionBlocks: CollisionBlock[] = [];
     platformCollisions2D.forEach((row, y) => {
       row.forEach((symbol, x) => {
         if (symbol === 202) {
@@ -236,7 +236,7 @@ export default function GameCanvas() {
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [difficulty, router]);
 
   return (
     <div className="flex items-center justify-center ">

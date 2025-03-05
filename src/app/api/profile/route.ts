@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     }
 
     return NextResponse.json(user);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Error fetching profile" },
       { status: 500 }
@@ -82,7 +82,7 @@ export async function PUT(request: Request) {
     return NextResponse.json({
       updatedUser,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { message: "Error updating profile" },
       { status: 500 }
