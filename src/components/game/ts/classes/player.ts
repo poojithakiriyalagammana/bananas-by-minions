@@ -86,7 +86,7 @@ export class Player extends Sprite {
     this.animations = animations;
     this.lastDirection = "right";
 
-    for (let key in this.animations) {
+    for (const key in this.animations) {
       const image = new Image();
       image.src = this.animations[key].imageSrc;
       this.animations[key].image = image;
@@ -152,7 +152,6 @@ export class Player extends Sprite {
   }
 
   shouldPanCameraToTheRight({
-    canvas,
     camera,
   }: {
     canvas: Canvas;
@@ -165,13 +164,7 @@ export class Player extends Sprite {
     }
   }
 
-  shouldPanCameraDown({
-    canvas,
-    camera,
-  }: {
-    canvas: Canvas;
-    camera: Camera;
-  }): void {
+  shouldPanCameraDown({ camera }: { canvas: Canvas; camera: Camera }): void {
     if (this.camerabox.position.y + this.velocity.y <= 0) return;
 
     if (this.camerabox.position.y <= Math.abs(camera.position.y)) {

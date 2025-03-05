@@ -6,7 +6,7 @@ import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Play, User, LogOut, X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 
 import LeaderboardPage from "@/components/leaderboard/leaderboard";
 import ProfilePage from "@/components/profile/profile";

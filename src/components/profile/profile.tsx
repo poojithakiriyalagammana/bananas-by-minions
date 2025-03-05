@@ -3,11 +3,9 @@
 import { useEffect, useState } from "react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { Loader, Pencil, Save, X } from "lucide-react";
+import { Loader, Save, X } from "lucide-react";
 
 interface UserProfile {
   name: string;

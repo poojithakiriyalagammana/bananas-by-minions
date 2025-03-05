@@ -1,13 +1,11 @@
 "use client";
 
 import GameCanvas from "@/components/game/gameCanvas";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader } from "lucide-react";
 import { SessionProvider, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const GameContent = () => {
   const { status } = useSession();

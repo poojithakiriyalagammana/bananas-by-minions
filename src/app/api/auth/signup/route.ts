@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       { message: "User created successfully" },
       { status: 201 }
     );
-  } catch (err) {
+  } catch {
     return NextResponse.json(
       { message: "Something went wrong" },
       { status: 500 }

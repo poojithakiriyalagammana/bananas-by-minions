@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import Image from "next/image";
 
 interface BananaData {
   question: string;
@@ -33,7 +34,7 @@ const BananaGame: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [userAnswer, setUserAnswer] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<string | null>(null);
   const [score, setScore] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(0);
   const [options, setOptions] = useState<Option[]>([]);
@@ -148,7 +149,8 @@ const BananaGame: React.FC = () => {
         setUserAnswer("");
         setMessage("");
         fetchData();
-      }, 1500);
+        setMessage(null);
+      }, 2000);
     } else {
       setShowModal(true);
     }
@@ -273,9 +275,11 @@ const BananaGame: React.FC = () => {
             className="flex justify-center mb-6"
             whileHover={{ scale: 1.01 }}
           >
-            <img
+            <Image
               src={data.question} //api image
               alt="Question"
+              width={600} // Set appropriate width
+              height={600} // Set appropriate height
               className="rounded-xl shadow-lg"
             />
           </motion.div>
@@ -291,7 +295,7 @@ const BananaGame: React.FC = () => {
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleSubmit(option.value)}
-                        className="text-4xl bg-[#91692d] border-2 border-white/30 from-blue-500 to-blue-600 text-white p-2 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
+                        className="text-4xl border-2 border-white/40 w-full bg-[#ffae00] p-4 rounded-xl shadow-lg hover:bg-[#ffce63] transition-all duration-300 text-[#753109]"
                       >
                         {option.value}
                       </motion.button>
@@ -318,7 +322,7 @@ const BananaGame: React.FC = () => {
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.98 }}
                       type="submit"
-                      className="text-2xl border-2 border-white/30 w-full bg-[#91692d] to-blue-600 text-white p-4 rounded-xl shadow-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300"
+                      className="text-2xl border-2 border-white/40 w-full bg-[#ffae00] p-4 rounded-xl shadow-lg hover:bg-[#ffce63] transition-all duration-300 text-[#753109]"
                     >
                       Submit Answer
                     </motion.button>
@@ -330,14 +334,26 @@ const BananaGame: React.FC = () => {
 
           <AnimatePresence>
             {message && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="mt-4 text-center font-medium text-gray-700"
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
               >
-                {message}
-              </motion.p>
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl relative"
+                >
+                  <div className="flex flex-col items-center space-y-6 text-center">
+                    <Award className="text-green-500 w-16 h-16 animate-pulse" />
+                    <h2 className="text-3xl font-bold text-gray-800 tracking-tight">
+                      {message}
+                    </h2>
+                  </div>
+                </motion.div>
+              </motion.div>
             )}
           </AnimatePresence>
         </motion.div>
