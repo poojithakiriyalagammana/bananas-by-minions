@@ -1,6 +1,7 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 DEMO: https://bananas-by-minions-4lef.vercel.app
+
 ## Getting Started
 
 First, run the development server:
@@ -20,6 +21,20 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Environment Variables
+
+Create a `.env.local` file in the root directory and add the following environment variables:
+
+```
+MONGO=your_mongodb_connection_string
+NEXTAUTH_SECRET=your_secret_key
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+NEXTAUTH_URL=http://localhost:3000
+```
+
+Make sure to replace `your_mongodb_connection_string`, `your_secret_key`, `your_google_client_id`, and `your_google_client_secret` with your actual values.
 
 ## Learn More
 
