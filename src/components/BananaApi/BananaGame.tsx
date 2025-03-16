@@ -61,7 +61,7 @@ const BananaGame: React.FC = () => {
     if (difficulty === "medium") {
       setTimeLeft(60); // 1 minute for medium
     } else if (difficulty === "hard") {
-      setTimeLeft(120); // 30 seconds for hard
+      setTimeLeft(30); // 30 seconds for hard
     }
   }, []);
 
