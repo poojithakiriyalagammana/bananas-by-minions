@@ -225,7 +225,6 @@ const HangmanGame = () => {
         correct_answer: "Mars",
         incorrect_answers: ["Venus", "Jupiter", "Mercury"],
       },
-      // Add 4 more questions to meet the questionsPerLevel requirement
       {
         category: "General Knowledge",
         type: "multiple",
@@ -438,12 +437,12 @@ const HangmanGame = () => {
 
   return (
     // <div className="min-h-screen bg-gray-100 p-4">
-    <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
+    <div className="max-w-4xl mx-auto bg-white bg-opacity-80 rounded-lg shadow-md p-6">
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={handleBack}
-        className="fixed top-4 left-4 bg-[#ffae00] border-2 border-white/40 hover:bg-[#ffce63] p-2 rounded-full shadow-lg flex items-center  text-[#753109] gap-2"
+        className="fixed top-4 left-4 bg-[#ffae00] border-2 border-white/40 hover:bg-[#ffce63] p-2 rounded-full shadow-lg flex items-center text-[#753109] gap-2"
       >
         <ArrowLeft className="w-6 h-6 text-gray-800 " />
         Back to Lobby
@@ -499,7 +498,7 @@ const HangmanGame = () => {
                 {options.map((option, index) => (
                   <button
                     key={index}
-                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-medium py-3 px-4 rounded-lg transition-colors"
+                    className="bg-blue-50 hover:bg-blue-200 text-blue-800 font-medium py-3 px-4 rounded-lg transition-colors outline outline-1 outline-red-500"
                     onClick={() => handleAnswer(option)}
                   >
                     {option}
@@ -566,6 +565,7 @@ const HangmanGame = () => {
         </div>
       </div>
     </div>
+
     // </div>
   );
 };
