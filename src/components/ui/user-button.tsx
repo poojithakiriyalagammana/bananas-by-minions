@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LogOut, X } from "lucide-react";
 
 import LeaderboardPage from "@/components/leaderboard/leaderboard";
+import HangmanGame from "../hangmangame/hangmangame";
 import ProfilePage from "@/components/profile/profile";
 import Link from "next/link";
 
@@ -16,7 +17,7 @@ const UserButton = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [activePopup, setActivePopup] = useState<
-    "play" | "signIn" | "leaderboard" | "profile" | null
+    "play" | "signIn" | "leaderboard" | "profile" | "hangman" | null
   >(null);
   const [isClient, setIsClient] = useState(false);
 
@@ -32,7 +33,7 @@ const UserButton = () => {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    router.push("/sign-in");
+    router.push("/");
   };
 
   const handleGameRedirect = (difficulty: string) => {
@@ -159,6 +160,17 @@ const UserButton = () => {
                 </Button>
               </motion.div>
             </div>
+            <div className="mb-6 w-full">
+              <motion.div
+                whileHover="hover"
+                whileTap="tap"
+                variants={buttonVariants}
+              >
+                <Button className="bg-[#992718] border-2 border-[#a63f3f]  hover:bg-[#94443a]  text-[#fff1e8] text-2xl px-8 py-3 rounded-full shadow-xl  w-full">
+                  <Link href="/hangman">Hangman Game</Link>
+                </Button>
+              </motion.div>
+            </div>
 
             {/* Logout Button */}
             <Button
@@ -183,6 +195,17 @@ const UserButton = () => {
                   className="bg-[#ffae00] border-2 border-[#753109]  hover:bg-[#ffce63]  text-[#753109] text-2xl px-8 py-3 rounded-full shadow-xl  w-full"
                 >
                   Leader Board
+                </Button>
+              </motion.div>
+            </div>
+            <div className="mb-6 w-full">
+              <motion.div
+                whileHover="hover"
+                whileTap="tap"
+                variants={buttonVariants}
+              >
+                <Button className="bg-[#992718] border-2 border-[#a63f3f]  hover:bg-[#94443a]  text-[#fff1e8] text-2xl px-8 py-3 rounded-full shadow-xl  w-full">
+                  <Link href="/hangman">Hangman Game</Link>
                 </Button>
               </motion.div>
             </div>
@@ -229,6 +252,11 @@ const UserButton = () => {
         {activePopup === "leaderboard" && (
           <PopupWrapper onClose={() => setActivePopup(null)}>
             <LeaderboardPage />
+          </PopupWrapper>
+        )}
+        {activePopup === "hangman" && (
+          <PopupWrapper onClose={() => setActivePopup(null)}>
+            <HangmanGame />
           </PopupWrapper>
         )}
 
