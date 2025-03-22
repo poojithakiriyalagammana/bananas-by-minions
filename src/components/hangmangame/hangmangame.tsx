@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { Button } from "../ui/button";
 
 interface Question {
   category: string;
@@ -496,13 +497,13 @@ const HangmanGame = () => {
 
               <div className="grid grid-cols-1 gap-3">
                 {options.map((option, index) => (
-                  <button
+                  <Button
                     key={index}
                     className="bg-blue-50 hover:bg-blue-200 text-blue-800 font-medium py-3 px-4 rounded-lg transition-colors outline outline-1 outline-red-500"
                     onClick={() => handleAnswer(option)}
                   >
                     {option}
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
