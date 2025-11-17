@@ -80,16 +80,21 @@ const UserButton = () => {
   const PopupWrapper = ({
     children,
     onClose,
+    wide = false,
   }: {
     children: React.ReactNode;
     onClose: () => void;
+    wide?: boolean;
   }) => (
     <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
-        className="bg-[#693b0d] rounded-2xl p-6 relative max-w-md w-full"
+        className={`bg-[#693b0d] rounded-2xl p-6 relative w-full ${
+          wide ? "max-w-2xl" : "max-w-md"
+        }`}
+        style={{ maxWidth: wide ? "42rem" : "28rem" }}
       >
         <Button
           onClick={onClose}
